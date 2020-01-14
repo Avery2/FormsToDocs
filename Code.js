@@ -53,17 +53,18 @@ function exportRecentAsDoc() {
   headerStyle = {};
   //  headerStyle[DocumentApp.Attribute.FONT_SIZE] = 18;
   //  headerStyle[DocumentApp.Attribute.BOLD] = true;
-  headerStyle[DocumentApp.Attribute.HEADING] =
-    DocumentApp.ParagraphHeading.HEADING1;
+  headerStyle[DocumentApp.Attribute.BOLD] = true;
+  headerStyle[DocumentApp.Attribute.UNDERLINE] = true;
   bodyStyle = {};
-
+  bodyStyle[DocumentApp.Attribute.BOLD] = false;
+  bodyStyle[DocumentApp.Attribute.UNDERLINE] = false;
   latestResponses.forEach(function(currentValue, index) {
     body.appendParagraph("" + titles[index]).setAttributes(headerStyle);
     body
       .appendParagraph("" + latestResponses[index].getResponse())
       .setAttributes(bodyStyle);
-      // TODO handle formatting types: a String or String[] or String[][] of answers to the question item
-    body.appendHorizontalRule();
+    // TODO handle formatting types: a String or String[] or String[][] of answers to the question item
+    //body.appendHorizontalRule();
   });
 }
 
