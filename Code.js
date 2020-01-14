@@ -25,7 +25,7 @@ function exportRecentAsDoc() {
   // create doc
   var doc = DocumentApp.create(d.toLocaleTimeString());
   // save to folder
-  if (!DriveApp.getFoldersByName().hasNext()) {
+  if (!DriveApp.getFoldersByName(form.getTitle() + " (Documents)").hasNext()) {
     // if doesn't exist, create it
     DriveApp.createFolder(form.getTitle() + " (Documents)");
   }
@@ -53,7 +53,7 @@ function exportRecentAsDoc() {
       .appendParagraph("" + latestResponses[index].getResponse())
       .setAttributes(bodyStyle);
     // TODO handle formatting types: a String or String[] or String[][] of answers to the question item
-    //body.appendHorizontalRule();
+    body.appendParagraph("");
   });
 }
 
@@ -61,7 +61,6 @@ function exportRecentAsDoc() {
  * Creates a trigger for when form entered.
  */
 function createSpreadsheetOpenTrigger() {
-  // test message
   var form = FormApp.getActiveForm();
   try {
     deleteAllTriggers();
