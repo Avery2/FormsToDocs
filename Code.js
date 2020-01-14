@@ -31,7 +31,9 @@ function exportRecentAsDoc() {
   });
   // TODO error handling if empty (will be empty array)
   Logger.log(form.getResponses());
-  var latestResponses = form.getResponses()[form.getResponses().length - 1].getItemResponses();
+  var latestResponses = form
+    .getResponses()
+    [form.getResponses().length - 1].getItemResponses();
 
   // MAKE DOCUMENT
   // create doc
@@ -55,18 +57,12 @@ function exportRecentAsDoc() {
     DocumentApp.ParagraphHeading.HEADING1;
   bodyStyle = {};
 
-  Logger.clear();
-  titles.forEach(function(currentValue) {
-    Logger.log(currentValue);
-  });
-  latestResponses.forEach(function(currentValue) {
-    Logger.log(currentValue);
-  });
-
-  // TODO fill doc here
   latestResponses.forEach(function(currentValue, index) {
     body.appendParagraph("" + titles[index]).setAttributes(headerStyle);
-    body.appendParagraph("" + latestResponses[index]).setAttributes(bodyStyle);
+    body
+      .appendParagraph("" + latestResponses[index].getResponse())
+      .setAttributes(bodyStyle);
+      // TODO handle formatting types: a String or String[] or String[][] of answers to the question item
     body.appendHorizontalRule();
   });
 }
