@@ -1,22 +1,5 @@
 /**
- * Creates a trigger for when form entered.
- */
-function createSpreadsheetOpenTrigger() {
-  // test message
-  var form = FormApp.getActiveForm();
-  try {
-    deleteAllTriggers();
-    ScriptApp.newTrigger("exportRecentAsDoc")
-      .forForm(form)
-      .onFormSubmit()
-      .create();
-  } catch (error) {
-    SpreadsheetApp.getUi().alert("Confirmation received.");
-  }
-}
-
-/**
- * Exports most recent entry to spreadsheet from form as a Google Doc.
+ * Creates a google document representation of each entry into a google forms. Automatically stores google documents in folder.
  */
 function exportRecentAsDoc() {
   // SETUP
@@ -29,19 +12,25 @@ function exportRecentAsDoc() {
   form.getItems().forEach(function(item, index) {
     titles[index] = item.getTitle();
   });
-  // TODO error handling if empty (will be empty array)
-  Logger.log(form.getResponses());
-  var latestResponses = form
-    .getResponses()
-    [form.getResponses().length - 1].getItemResponses();
+
+  if (form.getResponses().length != 0) {
+    var latestResponses = form
+      .getResponses()
+      [form.getResponses().length - 1].getItemResponses();
+  } else {
+    var latestResponses = [];
+  }
 
   // MAKE DOCUMENT
   // create doc
   var doc = DocumentApp.create(d.toLocaleTimeString());
   // save to folder
-  // TODO automate this, and create folder if not found
+  if (!DriveApp.getFoldersByName().hasNext()) {
+    // if doesn't exist, create it
+    DriveApp.createFolder(form.getTitle() + " (Documents)");
+  }
   var folder = DriveApp.getFoldersByName(
-    "Contact Information (Documents)"
+    form.getTitle() + " (Documents)"
   ).next();
   folder.addFile(DriveApp.getFileById(doc.getId())); // creates second reference to same file
   // remove from root (default) folder, which was automatically placed there on creation
@@ -66,6 +55,23 @@ function exportRecentAsDoc() {
     // TODO handle formatting types: a String or String[] or String[][] of answers to the question item
     //body.appendHorizontalRule();
   });
+}
+
+/**
+ * Creates a trigger for when form entered.
+ */
+function createSpreadsheetOpenTrigger() {
+  // test message
+  var form = FormApp.getActiveForm();
+  try {
+    deleteAllTriggers();
+    ScriptApp.newTrigger("exportRecentAsDoc")
+      .forForm(form)
+      .onFormSubmit()
+      .create();
+  } catch (error) {
+    SpreadsheetApp.getUi().alert("Confirmation received.");
+  }
 }
 
 /**
