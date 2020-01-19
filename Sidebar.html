@@ -75,7 +75,6 @@
       $(function() {
         $("#save-settings").click(saveSettingsToServer);
         $("#setting-a").click(toggleexportToSheet);
-        $("#setting-b").click(toggleSettingB);
         google.script.run
           .withSuccessHandler(loadSettings)
           .withFailureHandler(showStatus)
@@ -90,17 +89,11 @@
        * @param {Object} settings The saved settings from the client.
        */
       function loadSettings(settings) {
-        $("#seta-text").val(settings.aText);
-        $("#setb-text").val(!settings.bText);
+        $("#seta-text").val(settings.sheetURL);
 
         if (settings.exportToSheet === "true") {
           $("#setting-a").prop("checked", true);
           $("#seta-options").show();
-        }
-
-        if (settings.settingB === "true") {
-          $("#setting-b").prop("checked", true);
-          $("#setb-options").show();
         }
       }
 
@@ -125,10 +118,10 @@
         $("#status").remove();
         var exportToSheet = $("#setting-a").is(":checked");
         var settings = {
-          exportToSheet: exportToSheet
+          'exportToSheet': exportToSheet
         };
 
-        // Only save setting a options if selected
+        // Only save if export selected
         if (exportToSheet) {
           settings.sheetURL = $("#seta-text")
             .val()

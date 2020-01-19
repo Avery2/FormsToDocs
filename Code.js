@@ -192,10 +192,12 @@ function exportRecentAsDoc() {
   if (settings.getProperty("exportToSheet")) {
     if (!settings.getProperty("sheetURL")) {
       var ss = SpreadsheetApp.create(form.getTitle() + " (Document Links)");
+      settings.setProperty("sheetURL", ss.getUrl());
+      saveSettings();
     } else {
       var ss = SpreadsheetApp.openByUrl(settings.getProperty("sheetURL"));
     }
-    ss.appendRow(doc.getUrl());
+    ss.getSheets()[0].appendRow(doc.getUrl()," ");
   }
 }
 
