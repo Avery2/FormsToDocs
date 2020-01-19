@@ -12,6 +12,7 @@ var NOTICE = "NOTICE";
 function onOpen(e) {
   FormApp.getUi()
     .createAddonMenu()
+    // .createMenu()
     .addItem("Configure", "showSidebar")
     .addItem("About", "showAbout")
     .addToUi();
@@ -190,14 +191,14 @@ function exportRecentAsDoc() {
 
   var settings = PropertiesService.getDocumentProperties();
   if (settings.getProperty("exportToSheet")) {
-    if (!settings.getProperty("sheetURL")) {
+    if (!settings.getProperty("sheetURL") || settings.getProperty("sheetURL").trim() === '') {
       var ss = SpreadsheetApp.create(form.getTitle() + " (Document Links)");
       settings.setProperty("sheetURL", ss.getUrl());
       saveSettings();
     } else {
       var ss = SpreadsheetApp.openByUrl(settings.getProperty("sheetURL"));
     }
-    ss.getSheets()[0].appendRow(doc.getUrl()," ");
+    ss.getActiveSheet().appendRow([doc.getUrl()]);
   }
 }
 
