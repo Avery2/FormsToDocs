@@ -43,10 +43,6 @@
       #submit-subject {
         margin-bottom: 10px;
       }
-
-      #response-step {
-        display: inline;
-      }
     </style>
   </head>
   <body>
@@ -160,7 +156,6 @@
 
         // Only save setting a options if selected
         if (settingA) {
-          settings.responseStep = $("#response-step").val();
           settings.aText = $("#seta-text")
             .val()
             .trim();
@@ -191,21 +186,6 @@
           })
           .withUserObject(this)
           .saveSettings(settings);
-      }
-
-      /**
-       * Ensures that the entered step is a number between 1
-       * and 99999, inclusive.
-       */
-      function validateNumber() {
-        var value = $("#response-step").val();
-        if (!value) {
-          $("#response-step").val(10);
-        } else if (value < 1) {
-          $("#response-step").val(1);
-        } else if (value > 99999) {
-          $("#response-step").val(99999);
-        }
       }
 
       /**
