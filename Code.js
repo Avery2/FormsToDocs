@@ -12,7 +12,7 @@ var NOTICE = "uh.";
 function onOpen(e) {
   FormApp.getUi()
     .createAddonMenu()
-    // .addItem("Configure notifications", "showSidebar")
+    .addItem("Configure", "showSidebar")
     .addItem("About", "showAbout")
     .addToUi();
 }
@@ -59,10 +59,10 @@ function showAbout() {
  * @param {Object} settings An Object containing key-value
  *      pairs to store.
  */
-// function saveSettings(settings) {
-//   PropertiesService.getDocumentProperties().setProperties(settings);
-//   adjustFormSubmitTrigger();
-// }
+function saveSettings(settings) {
+  PropertiesService.getDocumentProperties().setProperties(settings);
+  // adjustFormSubmitTrigger();
+}
 
 /**
  * Queries the User Properties and adds additional data required to populate
@@ -71,27 +71,27 @@ function showAbout() {
  * @return {Object} A collection of Property values and
  *     related data used to fill the configuration sidebar.
  */
-// function getSettings() {
-//   var settings = PropertiesService.getDocumentProperties().getProperties();
+function getSettings() {
+  var settings = PropertiesService.getDocumentProperties().getProperties();
 
-//   // Use a default email if the creator email hasn't been provided yet.
-//   if (!settings.creatorEmail) {
-//     settings.creatorEmail = Session.getEffectiveUser().getEmail();
-//   }
+  // Use a default email if the creator email hasn't been provided yet.
+  if (!settings.creatorEmail) {
+    settings.creatorEmail = Session.getEffectiveUser().getEmail();
+  }
 
-//   // Get text field items in the form and compile a list
-//   //   of their titles and IDs.
-//   var form = FormApp.getActiveForm();
-//   var textItems = form.getItems(FormApp.ItemType.TEXT);
-//   settings.textItems = [];
-//   for (var i = 0; i < textItems.length; i++) {
-//     settings.textItems.push({
-//       title: textItems[i].getTitle(),
-//       id: textItems[i].getId()
-//     });
-//   }
-//   return settings;
-// }
+  // Get text field items in the form and compile a list
+  //   of their titles and IDs.
+  var form = FormApp.getActiveForm();
+  var textItems = form.getItems(FormApp.ItemType.TEXT);
+  settings.textItems = [];
+  for (var i = 0; i < textItems.length; i++) {
+    settings.textItems.push({
+      title: textItems[i].getTitle(),
+      id: textItems[i].getId()
+    });
+  }
+  return settings;
+}
 
 /**
  * Adjust the onFormSubmit trigger based on user's requests.

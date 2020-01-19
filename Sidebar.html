@@ -29,16 +29,16 @@
       label {
         font-weight: bold;
       }
-      #creator-options,
-      #respondent-options {
+      #seta-options,
+      #setb-options {
         background-color: #eee;
         border-color: #eee;
         border-width: 5px;
         border-style: solid;
         display: none;
       }
-      #creator-email,
-      #respondent-email,
+      #seta-text,
+      #setb-text,
       #button-bar,
       #submit-subject {
         margin-bottom: 10px;
@@ -53,61 +53,33 @@
     <div class="sidebar branding-below">
       <form>
         <div class="block">
-          <input type="checkbox" id="creator-notify" />
-          <label for="creator-notify">Notify me</label>
+          <input type="checkbox" id="setting-a" />
+          <label for="setting-a">Setting A</label>
         </div>
-        <div class="block form-group" id="creator-options">
-          <label for="creator-email">
-            My email addresses (comma-separated)
+        <div class="block form-group" id="seta-options">
+          <label for="seta-text">
+            Text
           </label>
-          <input type="text" class="width-100" id="creator-email" />
-          <label for="response-step">Send notifications after every</label>
-          <input
-            type="number"
-            id="response-step"
-            value="10"
-            min="1"
-            max="99999"
-          />
-          responses (default 10)
+          <input type="text" class="width-100" id="seta-text" />
+          <!-- more options -->
         </div>
 
         <div class="block">
-          <input type="checkbox" id="respondent-notify" />
-          <label for="respondent-notify">Notify respondents</label>
+          <input type="checkbox" id="setting-b" />
+          <label for="setting-b">Setting B</label>
         </div>
-        <div class="block form-group" id="respondent-options">
-          <label for="respondent-email">
-            Which question asks for their email?
+        <div class="block form-group" id="setb-options">
+          <label for="setb-text">
+            Text
           </label>
-          <select class="width-100" id="respondent-email"></select>
-          <label for="submit-subject">
-            Notification email subject:
-          </label>
-          <input type="text" class="width-100" id="submit-subject" />
-          <label for="submit-notice">Notification email body:</label>
-          <textarea
-            rows="8"
-            cols="40"
-            id="submit-notice"
-            class="width-100"
-          ></textarea>
+          <select class="width-100" id="setb-text"></select>
+          <!-- more options -->
         </div>
 
         <div class="block" id="button-bar">
           <button class="action" id="save-settings">Save</button>
         </div>
       </form>
-    </div>
-
-    <div class="sidebar bottom">
-      <img
-        alt="Add-on logo"
-        class="logo"
-        width="25"
-        src="https://g-suite-documentation-images.firebaseapp.com/images/newFormNotificationsicon.png"
-      />
-      <span class="gray branding-text">Form Notifications by Google</span>
     </div>
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
@@ -118,9 +90,8 @@
        */
       $(function() {
         $("#save-settings").click(saveSettingsToServer);
-        $("#creator-notify").click(toggleCreatorNotify);
-        $("#respondent-notify").click(toggleRespondentNotify);
-        $("#response-step").change(validateNumber);
+        $("#setting-a").click(toggleSettingA);
+        $("#setting-b").click(toggleSettingB);
         google.script.run
           .withSuccessHandler(loadSettings)
           .withFailureHandler(showStatus)
@@ -135,66 +106,91 @@
        * @param {Object} settings The saved settings from the client.
        */
       function loadSettings(settings) {
-        $("#creator-email").val(settings.creatorEmail);
-        $("#response-step").val(
-          !settings.responseStep ? 10 : settings.responseStep
-        );
-        $("#submit-subject").val(
-          !settings.responseSubject
-            ? "Thank you for filling out our form!"
-            : settings.responseSubject
-        );
-        $("#submit-notice").val(
-          !settings.responseText
-            ? "Thank you for responding to our form!"
-            : settings.responseText
-        );
+        $('#seta-text').val(settings.aText);
+        $('#setb-text').val(!settings.bText);
 
-        if (settings.creatorNotify === "true") {
-          $("#creator-notify").prop("checked", true);
-          $("#creator-options").show();
+        if (settings.settingA === "true") {
+          $("#setting-a").prop("checked", true);
+          $("#seta-options").show();
         }
 
-        if (settings.respondentNotify === "true") {
-          $("#respondent-notify").prop("checked", true);
-          $("#respondent-options").show();
-        }
-
-        // Fill the respondent email select box with the
-        // titles given to the form's text Items. Also include
-        // the form Item IDs as values so that they can be
-        // easily recovered during the Save operation.
-        for (var i = 0; i < settings.textItems.length; i++) {
-          var option = $("<option>")
-            .attr("value", settings.textItems[i]["id"])
-            .text(settings.textItems[i]["title"]);
-          $("#respondent-email").append(option);
-        }
-        $("#respondent-email").val(settings.respondentEmailItemId);
-      }
-
-      /**
-       * Toggles the visibility of the form creator notification options.
-       */
-      function toggleCreatorNotify() {
-        $("#status").remove();
-        if ($("#creator-notify").is(":checked")) {
-          $("#creator-options").show();
-        } else {
-          $("#creator-options").hide();
+        if (settings.settingB === "true") {
+          $("#setting-b").prop("checked", true);
+          $("#setb-options").show();
         }
       }
 
       /**
-       * Toggles the visibility of the form sumbitter notification options.
+       * Toggles the visibility of the setting a options.
        */
-      function toggleRespondentNotify() {
+      function toggleSettingA() {
         $("#status").remove();
-        if ($("#respondent-notify").is(":checked")) {
-          $("#respondent-options").show();
+        if ($("#setting-a").is(":checked")) {
+          $("#seta-options").show();
         } else {
-          $("#respondent-options").hide();
+          $("#seta-options").hide();
         }
+      }
+
+      /**
+       * Toggles the visibility of the setting b options.
+       */
+      function toggleSettingB() {
+        $("#status").remove();
+        if ($("#setting-b").is(":checked")) {
+          $("#setb-options").show();
+        } else {
+          $("#setb-options").hide();
+        }
+      }
+
+      /**
+       * Collects the options specified in the add-on sidebar and sends them to
+       * be saved as Properties on the server.
+       */
+      function saveSettingsToServer() {
+        this.disabled = true;
+        $("#status").remove();
+        var settingA = $("#setting-a").is(":checked");
+        var settingB = $("#setting-b").is(":checked");
+        var settings = {
+          'settingA': settingA,
+          'settingB': settingB
+        };
+
+        // Only save setting a options if selected
+        if (settingA) {
+          settings.responseStep = $("#response-step").val();
+          settings.aText = $("#seta-text")
+            .val()
+            .trim();
+
+          // Abort save if entered email is blank
+          if (!settings.aText) {
+            showStatus("Enter an owner email", $("#button-bar"));
+            this.disabled = false;
+            return;
+          }
+        }
+
+        // Only save setting b options if selected
+        if (settingB) {
+          settings.bText = $("#setb-text").val();
+        }
+
+        // Save the settings on the server
+        google.script.run
+          .withSuccessHandler(function(msg, element) {
+            showStatus("Saved settings", $("#button-bar"));
+            element.disabled = false;
+          })
+          .withFailureHandler(function(msg, element) {
+            showStatus(msg, $("#button-bar"));
+            // showStatus("failed", $("#button-bar"));
+            element.disabled = false;
+          })
+          .withUserObject(this)
+          .saveSettings(settings);
       }
 
       /**
@@ -210,56 +206,6 @@
         } else if (value > 99999) {
           $("#response-step").val(99999);
         }
-      }
-
-      /**
-       * Collects the options specified in the add-on sidebar and sends them to
-       * be saved as Properties on the server.
-       */
-      function saveSettingsToServer() {
-        this.disabled = true;
-        $("#status").remove();
-        var creatorNotify = $("#creator-notify").is(":checked");
-        var respondentNotify = $("#respondent-notify").is(":checked");
-        var settings = {
-          creatorNotify: creatorNotify,
-          respondentNotify: respondentNotify
-        };
-
-        // Only save creator options if notify is turned on
-        if (creatorNotify) {
-          settings.responseStep = $("#response-step").val();
-          settings.creatorEmail = $("#creator-email")
-            .val()
-            .trim();
-
-          // Abort save if entered email is blank
-          if (!settings.creatorEmail) {
-            showStatus("Enter an owner email", $("#button-bar"));
-            this.disabled = false;
-            return;
-          }
-        }
-
-        // Only save respondent options if notify is turned on
-        if (respondentNotify) {
-          settings.respondentEmailItemId = $("#respondent-email").val();
-          settings.responseSubject = $("#submit-subject").val();
-          settings.responseText = $("#submit-notice").val();
-        }
-
-        // Save the settings on the server
-        google.script.run
-          .withSuccessHandler(function(msg, element) {
-            showStatus("Saved settings", $("#button-bar"));
-            element.disabled = false;
-          })
-          .withFailureHandler(function(msg, element) {
-            showStatus(msg, $("#button-bar"));
-            element.disabled = false;
-          })
-          .withUserObject(this)
-          .saveSettings(settings);
       }
 
       /**
