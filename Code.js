@@ -1,6 +1,6 @@
 var ADDON_TITLE = "Forms to Docs";
 
-var NOTICE = "uh.";
+var NOTICE = "NOTICE";
 
 /**
  * Adds a custom menu to the active form to show the add-on sidebar.
@@ -56,7 +56,7 @@ function showAbout() {
 
 /**
  * Save sidebar settings to this form's Properties, and update the onFormSubmit
- * trigger as needed.
+ * trigger as needed. Called by Sidebar on user input.
  *
  * @param {Object} settings An Object containing key-value
  *      pairs to store.
@@ -80,8 +80,7 @@ function getSettings() {
     settings.creatorEmail = Session.getEffectiveUser().getEmail();
   }
 
-  // Get text field items in the form and compile a list
-  //   of their titles and IDs.
+  // Get text field items in the form and compile a list of their titles and IDs.
   var form = FormApp.getActiveForm();
   var textItems = form.getItems(FormApp.ItemType.TEXT);
   settings.textItems = [];
@@ -92,15 +91,16 @@ function getSettings() {
     });
   }
 
-  PropertiesService.getDocumentProperties().getKeys().forEach(function callback(value) {
-    Logger.log(value);
-  });
+  PropertiesService.getDocumentProperties()
+    .getKeys()
+    .forEach(function callback(value) {
+      Logger.log(value);
+    });
 
   return settings;
 }
 
 // usage, settings.getProperty("SettingA") == "true";
-
 /**
  * Responds to a form submission event if an onFormSubmit trigger has been
  * enabled. BROKE SAVED FOR REFERENCE
@@ -185,6 +185,18 @@ function exportRecentAsDoc() {
     // TODO handle formatting types: a String or String[] or String[][] of answers to the question item
     body.appendParagraph("");
   });
+
+  // Write log to spreadsheet
+
+  var settings = PropertiesService.getDocumentProperties();
+  if (settings.getProperty("exportToSheet")) {
+    if (!settings.getProperty("sheetURL")) {
+      var ss = SpreadsheetApp.create(form.getTitle() + " (Document Links)");
+    } else {
+      var ss = SpreadsheetApp.openByUrl(settings.getProperty("sheetURL"));
+    }
+    ss.appendRow(doc.getUrl());
+  }
 }
 
 /**

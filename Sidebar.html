@@ -50,25 +50,13 @@
       <form>
         <div class="block">
           <input type="checkbox" id="setting-a" />
-          <label for="setting-a">Setting A</label>
+          <label for="setting-a">Collect generated document urls in spreadsheet?</label>
         </div>
         <div class="block form-group" id="seta-options">
           <label for="seta-text">
-            Text
+            Spreadsheet to write to (URL)
           </label>
           <input type="text" class="width-100" id="seta-text" />
-          <!-- more options -->
-        </div>
-
-        <div class="block">
-          <input type="checkbox" id="setting-b" />
-          <label for="setting-b">Setting B</label>
-        </div>
-        <div class="block form-group" id="setb-options">
-          <label for="setb-text">
-            Text
-          </label>
-          <select class="width-100" id="setb-text"></select>
           <!-- more options -->
         </div>
 
@@ -86,7 +74,7 @@
        */
       $(function() {
         $("#save-settings").click(saveSettingsToServer);
-        $("#setting-a").click(toggleSettingA);
+        $("#setting-a").click(toggleexportToSheet);
         $("#setting-b").click(toggleSettingB);
         google.script.run
           .withSuccessHandler(loadSettings)
@@ -102,10 +90,10 @@
        * @param {Object} settings The saved settings from the client.
        */
       function loadSettings(settings) {
-        $('#seta-text').val(settings.aText);
-        $('#setb-text').val(!settings.bText);
+        $("#seta-text").val(settings.aText);
+        $("#setb-text").val(!settings.bText);
 
-        if (settings.settingA === "true") {
+        if (settings.exportToSheet === "true") {
           $("#setting-a").prop("checked", true);
           $("#seta-options").show();
         }
@@ -119,24 +107,12 @@
       /**
        * Toggles the visibility of the setting a options.
        */
-      function toggleSettingA() {
+      function toggleexportToSheet() {
         $("#status").remove();
         if ($("#setting-a").is(":checked")) {
           $("#seta-options").show();
         } else {
           $("#seta-options").hide();
-        }
-      }
-
-      /**
-       * Toggles the visibility of the setting b options.
-       */
-      function toggleSettingB() {
-        $("#status").remove();
-        if ($("#setting-b").is(":checked")) {
-          $("#setb-options").show();
-        } else {
-          $("#setb-options").hide();
         }
       }
 
@@ -147,30 +123,16 @@
       function saveSettingsToServer() {
         this.disabled = true;
         $("#status").remove();
-        var settingA = $("#setting-a").is(":checked");
-        var settingB = $("#setting-b").is(":checked");
+        var exportToSheet = $("#setting-a").is(":checked");
         var settings = {
-          'settingA': settingA,
-          'settingB': settingB
+          exportToSheet: exportToSheet
         };
 
         // Only save setting a options if selected
-        if (settingA) {
-          settings.aText = $("#seta-text")
+        if (exportToSheet) {
+          settings.sheetURL = $("#seta-text")
             .val()
             .trim();
-
-          // Abort save if entered email is blank
-          if (!settings.aText) {
-            showStatus("Enter an owner email", $("#button-bar"));
-            this.disabled = false;
-            return;
-          }
-        }
-
-        // Only save setting b options if selected
-        if (settingB) {
-          settings.bText = $("#setb-text").val();
         }
 
         // Save the settings on the server
