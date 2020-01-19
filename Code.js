@@ -90,6 +90,11 @@ function getSettings() {
       id: textItems[i].getId()
     });
   }
+
+  PropertiesService.getDocumentProperties().getKeys().forEach(function callback(value) {
+    Logger.log(value);
+  });
+
   return settings;
 }
 
