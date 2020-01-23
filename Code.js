@@ -154,7 +154,7 @@ function exportRecentAsDoc() {
 
   // MAKE DOCUMENT
   // create doc
-  var doc = DocumentApp.create(d.toLocaleTimeString());
+  var doc = DocumentApp.create(form.getItems[0] + " " + form.getItems[1]);
   // save to folder
   if (!DriveApp.getFoldersByName(form.getTitle() + " (Documents)").hasNext()) {
     // if doesn't exist, create it
